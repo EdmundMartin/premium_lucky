@@ -18,6 +18,7 @@ class BondDataParser:
         self.date = dt.date(year=year, month=month, day=1)
         self._prize_regex = re.compile(r'£(?P<prize>[\d\-,]+)')
         self._bond_pattern = re.compile(r'(?P<num>[\d\-A-Z]{4,})')
+        self._valid_digits = set(string.digits)
         self._valid_chars = set(string.ascii_uppercase)
 
     def _is_divider(self, line: str) -> bool:
@@ -35,7 +36,8 @@ class BondDataParser:
         bonds = re.findall(self._bond_pattern, line)
         cleaned_bonds = []
         for val in bonds:
-            if 'VIII' == val:
+            first_digit = val[0]
+            if first_digit not in self._valid_digits:
                 continue
             elif any(i in val for i in self._valid_chars):
                 cleaned_bonds.append(val)
